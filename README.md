@@ -93,223 +93,46 @@ When you run the application, the following data is automatically seeded:
 - **Duration**: 120 minutes
 - **Questions**: 10 MCQ + 5 Theory questions (15 total)
 
-## API Endpoints
+## API Documentation
 
-### Authentication
+Complete API documentation with detailed request/response examples, authentication requirements, and error responses is available in the **Postman Collection**:
 
-#### Login
-```http
-POST /api/auth/login/
-Content-Type: application/json
+📄 **[Acad AI.postman_collection.json](./Acad%20AI.postman_collection.json)**
 
-{
-  "username": "230501001",
-  "password": "password123"
-}
+### Quick Overview of Available Endpoints:
 
-Response: 200 OK
-{
-  "token": "your-auth-token-here"
-}
-```
+**Authentication**
+- `POST /api/auth/login/` - Login and get authentication token
+- `POST /api/auth/logout/` - Logout and invalidate token
 
-Use the returned token in subsequent requests:
-```http
-Authorization: Token your-auth-token-here
-```
+**Exam Management**
+- `POST /api/submissions/exams/<exam_id>/start/` - Start an exam
+- `GET /api/questions/exams/<exam_id>/` - Get exam questions (supports `?type=MCQ` or `?type=THEORY`)
+- `GET /api/answers/exams/<exam_id>/` - View exam progress and answers
+- `PUT /api/submissions/exams/<exam_id>/end/` - Submit exam for grading
 
-#### Logout
-```http
-POST /api/auth/logout/
-Authorization: Token your-auth-token-here
+**Answer Submission**
+- `POST /api/answers/questions/<question_id>/submit/` - Submit answer (MCQ: `choice_id`, Theory: `text`)
 
-Response: 200 OK
-{
-  "message": "Logged out successfully"
-}
-```
+**Submissions**
+- `GET /api/submissions/` - View all submissions (supports `?exam_id=<id>` filter)
 
-### Exam Management
+### Usage
 
-#### Start Exam
-```http
-POST /api/submissions/exams/<exam_id>/start/
-Authorization: Token your-auth-token-here
-
-Response: 201 Created
-{
-  "message": "Exam started successfully",
-  "submission_id": 1,
-  "started_at": "2026-01-04T22:19:49.123456",
-  "status": "IN_PROGRESS",
-  "duration_minutes": 120
-}
-```
-
-#### Get Exam Questions
-```http
-GET /api/questions/exams/<exam_id>/?type=MCQ
-GET /api/questions/exams/<exam_id>/?type=THEORY
-GET /api/questions/exams/<exam_id>/  # All questions
-Authorization: Token your-auth-token-here
-
-Response: 200 OK
-{
-  "count": 15,
-  "next": null,
-  "previous": null,
-  "results": [
-    {
-      "id": 1,
-      "question_type": "MCQ",
-      "text": "What is the capital of France?",
-      "marks": 2.0,
-      "position": 1,
-      "choices": [
-        {"id": 1, "text": "Paris", "option": "A"},
-        {"id": 2, "text": "London", "option": "B"},
-        {"id": 3, "text": "Berlin", "option": "C"},
-        {"id": 4, "text": "Madrid", "option": "D"}
-      ],
-      "answer": {
-        "id": null,
-        "selected_choice": null,
-        "text": null,
-        "marks_awarded": null
-      }
-    }
-  ]
-}
-```
-
-#### Submit Answer (MCQ)
-```http
-POST /api/answers/questions/<question_id>/submit/
-Authorization: Token your-auth-token-here
-Content-Type: application/json
-
-{
-  "choice_id": 1
-}
-
-Response: 201 Created
-{
-  "message": "Answer submitted successfully",
-  "answer_id": 1,
-  "question_id": 1,
-  "choice_id": 1,
-  "created": true
-}
-```
-
-#### Submit Answer (Theory)
-```http
-POST /api/answers/questions/<question_id>/submit/
-Authorization: Token your-auth-token-here
-Content-Type: application/json
-
-{
-  "text": "Your detailed theory answer here..."
-}
-
-Response: 201 Created
-{
-  "message": "Answer submitted successfully",
-  "answer_id": 2,
-  "question_id": 11,
-  "created": true
-}
-```
-
-#### Get Exam Answers/Progress
-```http
-GET /api/answers/exams/<exam_id>/?limit=10&offset=0
-Authorization: Token your-auth-token-here
-
-Response: 200 OK
-{
-  "count": 15,
-  "next": "http://localhost:8000/api/answers/exams/1/?limit=10&offset=10",
-  "previous": null,
-  "results": [
-    {
-      "id": 1,
-      "question_type": "MCQ",
-      "text": "Question text...",
-      "marks": 2.0,
-      "position": 1,
-      "choices": [...],
-      "answer": {
-        "id": 1,
-        "selected_choice": {"id": 1, "text": "Paris", "option": "A"},
-        "text": null,
-        "marks_awarded": 2.0
-      }
-    }
-  ]
-}
-```
-
-#### End Exam
-```http
-PUT /api/submissions/exams/<exam_id>/end/
-Authorization: Token your-auth-token-here
-
-Response: 200 OK
-{
-  "message": "Exam submitted successfully",
-  "submission_id": 1,
-  "started_at": "2026-01-04T22:19:49.123456",
-  "submitted_at": "2026-01-04T22:25:30.123456",
-  "status": "SUBMITTED"
-}
-```
-
-Note: Grading happens asynchronously in the background. Status will change to `GRADED` once complete.
-
-#### View Submissions
-```http
-GET /api/submissions/?exam_id=1  # Filter by exam (optional)
-GET /api/submissions/            # All submissions
-Authorization: Token your-auth-token-here
-
-Response: 200 OK
-{
-  "count": 1,
-  "next": null,
-  "previous": null,
-  "results": [
-    {
-      "id": 1,
-      "exam": {
-        "id": 1,
-        "title": "Final Examination - Advanced Meme Theory",
-        "course": {
-          "code": "FUN 420",
-          "title": "Advanced Meme Theory and Internet Culture"
-        }
-      },
-      "status": "GRADED",
-      "started_at": "2026-01-04T22:19:49.123456",
-      "submitted_at": "2026-01-04T22:25:30.123456",
-      "score": 18.50,
-      "created_at": "2026-01-04T22:19:49.123456"
-    }
-  ]
-}
-```
+1. Import `Acad AI.postman_collection.json` into Postman
+2. Use the **Login** request to get your authentication token
+3. The token is automatically set in the collection variables
+4. All subsequent requests will use the token automatically
 
 ## Exam Flow
 
-1. **Login** as a student using `/api/auth/login/`
-2. **Start Exam** using `/api/submissions/exams/<exam_id>/start/`
-3. **Get Questions** using `/api/questions/exams/<exam_id>/`
-4. **Answer Questions** one by one using `/api/answers/questions/<question_id>/submit/`
-   - For MCQ: Submit `choice_id`
-   - For Theory: Submit `text` answer
-5. **Check Progress** (optional) using `/api/answers/exams/<exam_id>/`
-6. **End Exam** using `/api/submissions/exams/<exam_id>/end/`
-7. **View Results** using `/api/submissions/` after grading completes
+1. **Login** as a student
+2. **Start Exam** 
+3. **Get Questions** (optionally filter by type)
+4. **Answer Questions** one by one (MCQ or Theory)
+5. **Check Progress** (optional)
+6. **End Exam** to submit for grading
+7. **View Results** after background grading completes
 
 ## Grading System
 

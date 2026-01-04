@@ -1,0 +1,102 @@
+{
+	"info": {
+		"_postman_id": "730983b9-aaff-47d9-833c-ff2416c52c85",
+		"name": "Acad AI",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "50799407",
+		"_collection_link": "https://xxxx88-2864.postman.co/workspace/shegs~faf340fd-62c6-4077-8517-bf53165a5d4c/collection/50799407-730983b9-aaff-47d9-833c-ff2416c52c85?action=share&source=collection_link&creator=50799407"
+	},
+	"item": [
+		{
+			"name": "Start Exam",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"url": {
+					"raw": "{{acadai-base-url}}/api/submissions/exams/:examId/start/",
+					"host": [
+						"{{acadai-base-url}}"
+					],
+					"path": [
+						"api",
+						"submissions",
+						"exams",
+						":examId",
+						"start",
+						""
+					],
+					"variable": [
+						{
+							"key": "examId",
+							"value": "1"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "View Submissions",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{acadai-base-url}}/api/submissions",
+					"host": [
+						"{{acadai-base-url}}"
+					],
+					"path": [
+						"api",
+						"submissions"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"auth": {
+		"type": "bearer",
+		"bearer": [
+			{
+				"key": "token",
+				"value": "{{acadai-access-token}}",
+				"type": "string"
+			}
+		]
+	},
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"requests": {},
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"requests": {},
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "acadai-base-url",
+			"value": ""
+		},
+		{
+			"key": "acadai-access-token",
+			"value": "",
+			"type": "default"
+		}
+	]
+}
